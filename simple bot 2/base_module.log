@@ -1,0 +1,18 @@
+2025-05-18 17:02:17,105 - INFO - Configuration loaded successfully.
+2025-05-18 17:02:17,106 - INFO - Attempting calibration (attempt 1)...
+2025-05-18 17:02:17,106 - ERROR - Calibration attempt 1 failed: 'ADBModule' object has no attribute 'get_offset'
+2025-05-18 17:02:17,106 - CRITICAL - Calibration failed after maximum retries.
+2025-05-18 17:02:17,125 - INFO - Configuration loaded successfully.
+2025-05-18 17:02:17,125 - INFO - Configuration loaded successfully.
+2025-05-18 17:04:38,170 - INFO - Configuration loaded successfully.
+2025-05-18 17:04:38,171 - INFO - Attempting calibration (attempt 1)...
+2025-05-18 17:04:38,171 - ERROR - Calibration attempt 1 failed: 'ADBModule' object has no attribute 'get_offset'
+2025-05-18 17:04:38,171 - CRITICAL - Calibration failed after maximum retries.
+2025-05-18 17:04:38,186 - INFO - Configuration loaded successfully.
+2025-05-18 17:04:38,186 - INFO - Configuration loaded successfully.
+2025-05-25 22:07:50,896 - INFO - Configuration loaded successfully.
+2025-05-25 22:07:50,897 - INFO - Attempting calibration (attempt 1)...
+2025-05-25 22:07:50,897 - ERROR - Calibration attempt 1 failed: 'ADBModule' object has no attribute 'get_offset'
+2025-05-25 22:07:50,897 - CRITICAL - Calibration failed after maximum retries.
+2025-05-25 22:07:50,914 - INFO - Configuration loaded successfully.
+2025-05-25 22:07:50,914 - INFO - Configuration loaded successfully.
