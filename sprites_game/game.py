@@ -9,13 +9,17 @@ from .models import (
     Prize,
 )
 from .user import User
+from .mcp_client import MCPClient
 
 class SpriteGame:
-    def __init__(self):
+    def __init__(self, mcp_client: Optional[MCPClient] = None):
         self.users: Dict[str, User] = {}
         # Stationary NPC known for telling stories
         self.lorekeeper = LoreKeeper()
         self.enemy_level = 1
+        self.mcp = mcp_client or MCPClient()
+        # register the lorekeeper with the MCP
+        self.mcp.register_npc(self.lorekeeper.name, {"location": self.lorekeeper.location})
 
     def _update_rankings(self) -> None:
         """Assign rank codes to the top 100 users by token balance."""
@@ -37,6 +41,7 @@ class SpriteGame:
     def give_initial_sprite(self, user: User) -> Sprite:
         sprite = Sprite(name=f"{user.username}'s Sprite", classes=["Warrior", "Mage", "Rogue"])
         user.give_sprite(sprite)
+        self.mcp.register_npc(sprite.sprite_id, {"owner": user.username, "classes": sprite.classes})
         return sprite
 
     def award_tokens(self, user: User, amount: int) -> None:
@@ -54,7 +59,9 @@ class SpriteGame:
 
     def talk_to_lorekeeper(self) -> str:
         """Return lore from the stationary NPC."""
-        return self.lorekeeper.speak()
+        lore = self.lorekeeper.speak()
+        self.mcp.trigger_event("lore", {"npc": self.lorekeeper.name})
+        return lore
 
     def wander(self, user: User) -> str:
         """Sprites wander and may request attention."""
@@ -70,6 +77,10 @@ class SpriteGame:
         sprite = user.sprites[0]
         sprite.appearance.color = color
         sprite.appearance.accessory = accessory
+        self.mcp.trigger_event(
+            "customize_avatar",
+            {"sprite": sprite.sprite_id, "color": color, "accessory": accessory},
+        )
         return f"{sprite.name} is now {color} with {accessory}."
 
     def battle(self, user: User) -> str:
@@ -95,6 +106,14 @@ class SpriteGame:
                 prize_msg = f" Found {prize.name}!"
             self.enemy_level += 1
             self.award_tokens(user, 10 * self.enemy_level)
+            self.mcp.trigger_event(
+                "battle",
+                {
+                    "sprite": sprite.sprite_id,
+                    "enemy": enemy.name,
+                    "result": "win",
+                },
+            )
             return (
                 f"{sprite.name} defeated the {enemy.name}! "
                 f"Gained {new_item.name}.{prize_msg}"
@@ -102,5 +121,13 @@ class SpriteGame:
         else:
             # Player loses but enemy still grows a bit
             self.enemy_level += 1
+            self.mcp.trigger_event(
+                "battle",
+                {
+                    "sprite": sprite.sprite_id,
+                    "enemy": enemy.name,
+                    "result": "loss",
+                },
+            )
             return f"{sprite.name} was defeated by the {enemy.name}."
 

@@ -6,15 +6,29 @@ from typing import Tuple, Dict, Optional
 
 from adb_module import ADBModule
 from ocr_module import OCRModule
+try:
+    from sprites_game.mcp_client import MCPClient
+except ModuleNotFoundError:  # allow tests run from this folder
+    import sys
+    import os as _os
+    sys.path.append(_os.path.abspath(_os.path.join(_os.path.dirname(__file__), "..")))
+    from sprites_game.mcp_client import MCPClient
 
 class NodeMapper:
     """Minimal node mapper used for tests."""
-    def __init__(self, db_path: str = "grid_data.db", adb: Optional[ADBModule] = None,
-                 ocr: Optional[OCRModule] = None, device_id: Optional[str] = None):
+    def __init__(
+        self,
+        db_path: str = "grid_data.db",
+        adb: Optional[ADBModule] = None,
+        ocr: Optional[OCRModule] = None,
+        device_id: Optional[str] = None,
+        mcp_client: Optional[MCPClient] = None,
+    ):
         self.db_path = db_path
         self.adb = adb or ADBModule()
         self.ocr = ocr or OCRModule()
         self.device_id = device_id
+        self.mcp = mcp_client or MCPClient()
         self.screenshot_dir = "screenshots"
         os.makedirs(self.screenshot_dir, exist_ok=True)
         os.makedirs("raw_text", exist_ok=True)
@@ -111,3 +125,6 @@ class NodeMapper:
                 (adb_x, adb_y, x, y, node_type, details_json, kingdom, kingdom_x, kingdom_y),
             )
             conn.commit()
+        env_id = f"{x},{y}"
+        self.mcp.register_environment(env_id, {"type": node_type, "details": details, "kingdom": kingdom})
+

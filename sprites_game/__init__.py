@@ -11,6 +11,7 @@ from .models import (
     Prize,
 )
 from .user import User
+from .mcp_client import MCPClient
 
 __all__ = [
     "SpriteGame",
@@ -22,4 +23,5 @@ __all__ = [
     "Appearance",
     "Prize",
     "User",
+    "MCPClient",
 ]

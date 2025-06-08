@@ -1,5 +1,6 @@
 import unittest
 from .game import SpriteGame
+from .mcp_client import MCPClient
 
 class TestSpriteGame(unittest.TestCase):
     def test_register_and_initial_sprite(self):
@@ -56,6 +57,17 @@ class TestSpriteGame(unittest.TestCase):
         game.record_referral_contribution(top_user, 5)
         self.assertEqual(top_user.contribution, 10)
         self.assertEqual(top_user.referral_contribution, 5)
+
+    def test_mcp_integration(self):
+        mcp = MCPClient()
+        game = SpriteGame(mcp_client=mcp)
+        user = game.register_user("dana")
+        sprite = game.give_initial_sprite(user)
+        game.customize_avatar(user, "blue", "cape")
+        game.battle(user)
+        events = [e[0] for e in mcp.log]
+        self.assertIn("npc", events)
+        self.assertIn("trigger", events)
 
 if __name__ == "__main__":
     unittest.main()
