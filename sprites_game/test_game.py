@@ -69,6 +69,16 @@ class TestSpriteGame(unittest.TestCase):
         self.assertIn("npc", events)
         self.assertIn("trigger", events)
 
+    def test_map_rotation_and_ports(self):
+        game = SpriteGame()
+        first_map = game.current_map()
+        game.rotate_map()
+        self.assertNotEqual(first_map.id, game.current_map().id)
+
+        port = game.access_port("home")
+        self.assertIsNotNone(port)
+        self.assertEqual(port.type, "home")
+
 if __name__ == "__main__":
     unittest.main()
 

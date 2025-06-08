@@ -1,0 +1,5 @@
+[
+  {"id": "snow_valley", "theme": "holiday", "goals": ["collect 10 snowflakes"]},
+  {"id": "mystic_forest", "theme": "event", "goals": ["find the hidden sprite"]},
+  {"id": "sunny_beach", "theme": "event", "goals": ["build a sandcastle"]}
+]

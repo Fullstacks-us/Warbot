@@ -1,0 +1,4 @@
+[
+  {"id": "jingle", "role": "cheerful guide", "dialog": ["Hi there!", "Keep clicking!"]},
+  {"id": "shadow", "role": "mysterious whisperer", "dialog": ["...", "Secrets await"]}
+]

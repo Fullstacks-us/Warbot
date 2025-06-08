@@ -1,5 +1,9 @@
 """Simplified game skeleton for NFT-like sprites."""
 from typing import Dict, List, Optional
+
+from .maps import load_maps, MapDef
+from .ports import load_ports, Port
+from .feedback import load_trigger, FeedbackTrigger
 from .models import (
     Sprite,
     Minion,
@@ -14,10 +18,16 @@ from .mcp_client import MCPClient
 class SpriteGame:
     def __init__(self, mcp_client: Optional[MCPClient] = None):
         self.users: Dict[str, User] = {}
-        # Stationary NPC known for telling stories
         self.lorekeeper = LoreKeeper()
         self.enemy_level = 1
         self.mcp = mcp_client or MCPClient()
+
+        # game content
+        self.maps: List[MapDef] = load_maps()
+        self.ports: List[Port] = load_ports()
+        self.feedback: FeedbackTrigger = load_trigger()
+        self.current_map_idx = 0
+
         # register the lorekeeper with the MCP
         self.mcp.register_npc(self.lorekeeper.name, {"location": self.lorekeeper.location})
 
@@ -130,4 +140,30 @@ class SpriteGame:
                 },
             )
             return f"{sprite.name} was defeated by the {enemy.name}."
+
+    # --- New functionality for map rotation and ports ---
+
+    def current_map(self) -> MapDef:
+        return self.maps[self.current_map_idx]
+
+    def rotate_map(self) -> MapDef:
+        self.current_map_idx = (self.current_map_idx + 1) % len(self.maps)
+        self.mcp.trigger_event("map_rotate", {"map": self.current_map().id})
+        return self.current_map()
+
+    def access_port(self, port_id: str) -> Optional[Port]:
+        for p in self.ports:
+            if p.id == port_id:
+                self.mcp.trigger_event("port", {"id": p.id, "type": p.type})
+                return p
+        return None
+
+    def complete_map(self, user: User) -> None:
+        """Trigger feedback loop when a map is completed."""
+        self.mcp.trigger_event(
+            "map_complete",
+            {"user": user.username, "map": self.current_map().id},
+        )
+        # rotate to next map after completion
+        self.rotate_map()
 

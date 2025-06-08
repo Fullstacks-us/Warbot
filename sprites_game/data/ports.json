@@ -1,0 +1,5 @@
+[
+  {"id": "home", "type": "home", "description": "Safe zone with basic features"},
+  {"id": "arena", "type": "obvious", "description": "Battle arena"},
+  {"id": "whisper", "type": "whispered", "description": "Hidden contributor port"}
+]
